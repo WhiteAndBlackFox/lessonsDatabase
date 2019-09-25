@@ -6,7 +6,9 @@
 
 */
 
-UPDATE users SET created_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE created_at IS NULL OR updated_at IS NULL;
+UPDATE users SET created_at = CURRENT_TIMESTAMPWHERE created_at IS NULL;
+
+UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE updated_at IS NULL;
 
 /*
 
