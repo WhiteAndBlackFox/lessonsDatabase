@@ -55,7 +55,7 @@ SELECT * FROM users u WHERE MONTHNAME(u.created_at) IN ('may', 'october')
 
 -- 1 вариант --
 SELECT * FROM catalogs c 
-    WHERE c.id IN (5, 1, 2) ORDER BY;
+    WHERE c.id IN (5, 1, 2) ORDER BY FIELD(id, 5,1,2);
 
 -- 2 вариант --
 SELECT * FROM catalogs c 
@@ -69,7 +69,11 @@ ORDER BY c.id = 5 DESC, c.id = 1 DESC, c.id = 2 DESC;
 
 */
 
+-- 1 вариант --
 SELECT AVG((YEAR(CURRENT_DATE) - YEAR(birthday)) - (DATE_FORMAT(CURRENT_DATE, '%m%d') < DATE_FORMAT(birthday, '%m%d'))) FROM users;
+
+-- 2 вариант --
+SELECT AVG(TIMESTAMPDIFF(YEAR, birthday_at, NOW())) old_player FROM users;
 
 /*
 
@@ -78,7 +82,7 @@ SELECT AVG((YEAR(CURRENT_DATE) - YEAR(birthday)) - (DATE_FORMAT(CURRENT_DATE, '%
 
 */
 
-SELECT DAYNAME(u.created_at) as week_name, COUNT(*) FROM users u GROUP BY week_name;
+SELECT DAYNAME(DATE_ADD(u.birthday, INTERVAL YEAR(NOW()) - YEAR(u.birthday) YEAR)) as week_name, COUNT(*) FROM users u GROUP BY week_name;
 
 /*
 
@@ -90,7 +94,7 @@ SELECT DAYNAME(u.created_at) as week_name, COUNT(*) FROM users u GROUP BY week_n
 WITH T AS (SELECT * FROM (SELECT (-2) UNION ALL SELECT (-3) UNION ALL SELECT (4) UNION ALL SELECT (-5)) X(value)), P AS ( 
 	SELECT SUM(CASE WHEN value < 0 THEN 1 ELSE 0 END) neg,
 		SUM(CASE WHEN value > 0 THEN 1 ELSE 0 END) pos,
-		COUNT(*) total FROM T)
+		COUNT(value) total FROM T)
 	SELECT CASE WHEN total <> pos + neg THEN 0 ELSE (CASE WHEN neg % 2 = 1 THEN -1 ELSE +1 END) *round(exp(SUM(LOG(abs(value)))))
 END product 
 FROM T,P
